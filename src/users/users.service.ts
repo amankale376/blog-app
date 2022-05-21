@@ -94,13 +94,14 @@ export class UsersService {
             if (isUserExists)
                 throw new BadRequestException('User already registered');
             const hash = bcrypt.hashSync(password);
-            return await this.userModel.create({
+            const newUser = await this.userModel.create({
                 email,
                 name,
                 password: hash,
                 profilePicture,
                 username
             });
+            return { success: true, ...newUser.toJSON() };
         } catch (error) {
             throw error;
         }
