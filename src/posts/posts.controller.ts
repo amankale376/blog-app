@@ -32,7 +32,11 @@ export class PostsController {
         @Query('offset') offset: string,
         @Query('sort') sort: string
     ) {
-        return await this.postsService.getAllPosts(limit, offset, sort);
+        return await this.postsService.getAllPosts(
+            limit,
+            parseInt(offset),
+            sort
+        );
     }
 
     @Get('getUserPosts')

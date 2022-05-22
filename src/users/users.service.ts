@@ -80,13 +80,7 @@ export class UsersService {
         }
     }
 
-    async signup({
-        email,
-        name,
-        password,
-        profilePicture,
-        username
-    }: SignupDto) {
+    async signup({ email, name, password, username }: SignupDto) {
         try {
             const isUserExists = await this.userModel.findOne({
                 $or: [{ username }, { email }]
@@ -98,7 +92,6 @@ export class UsersService {
                 email,
                 name,
                 password: hash,
-                profilePicture,
                 username
             });
             return { success: true, ...newUser.toJSON() };

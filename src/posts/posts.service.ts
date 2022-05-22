@@ -40,7 +40,7 @@ export class PostsService {
     async deletePost(user, deletePostDto: DeletePostDto) {
         try {
             const isUser = await this.userModel.findById(user._id);
-            if (!isUser) throw new UnauthorizedException('unauthorized');
+            if (!isUser) throw new UnauthorizedException('user not found');
             const isPost = await this.postModel.findById(deletePostDto.postId);
             if (!isPost) throw new NotFoundException('post not found');
             if (isPost.user === user._id || user.role === Role.Admin) {
@@ -57,13 +57,13 @@ export class PostsService {
 
     async getAllPosts(limit, offset, sort) {
         try {
-            limit = +limit || 10;
-            offset = +offset || 0;
+            limit = limit || 10;
+            offset = offset || 0;
             sort = parseInt(sort) || -1;
             const allPosts = await this.postModel.aggregate([
-                { $limit: +limit },
-                { $skip: +offset },
                 { $sort: { createdAt: sort } },
+                { $skip: offset },
+                { $limit: +limit },
                 {
                     $addFields: {
                         userObjectId: { $toObjectId: '$user' }
@@ -90,10 +90,14 @@ export class PostsService {
                         foreignField: 'post',
                         as: 'comments'
                     }
-
                 }
             ]);
-            return { success: true, allPosts };
+            const totalDocuments = await this.postModel.find().count();
+            let hasMore = false;
+            if (offset + allPosts.length < totalDocuments) {
+                hasMore = true;
+            }
+            return { success: true, allPosts, hasMore };
         } catch (error) {
             throw error;
         }
@@ -113,9 +117,9 @@ export class PostsService {
                     }
                 },
                 { $match: { userStringId: user._id } },
-                { $limit: +limit },
-                { $skip: +offset },
                 { $sort: { createdAt: sort } },
+                { $skip: offset },
+                { $limit: +limit },
                 {
                     $addFields: {
                         userObjectId: { $toObjectId: '$user' }
@@ -144,7 +148,14 @@ export class PostsService {
                     }
                 }
             ]);
-            return { success: true, posts: allPosts };
+            const totalDocuments = await this.postModel
+                .find({ userStringId: user._id })
+                .count();
+            let hasMore = false;
+            if (offset + allPosts.length < totalDocuments) {
+                hasMore = true;
+            }
+            return { success: true, posts: allPosts, hasMore };
         } catch (error) {
             throw error;
         }
@@ -154,14 +165,12 @@ export class PostsService {
         try {
             const isUser = await this.userModel.findById(user._id);
             if (!isUser) throw new UnauthorizedException('unauthorized');
-            const isPost = await this.postModel.findById(
-                createCommentDto.postId
-            );
+            const isPost = await this.postModel.findById(createCommentDto.post);
             if (!isPost) throw new UnauthorizedException('unauthorized');
             const newComment = await this.commentModel.create({
                 comment: createCommentDto.comment,
                 commentorUsername: user.username,
-                post: createCommentDto.postId
+                post: createCommentDto.post
             });
             return { success: true, ...newComment.toJSON() };
         } catch (error) {

@@ -6,9 +6,6 @@ export class CreatePostDto {
 
     @IsString()
     content: string;
-
-    @IsString()
-    pictures: string;
 }
 
 export class DeletePostDto {
@@ -18,7 +15,7 @@ export class DeletePostDto {
 
 export class CreateCommentDto {
     @IsString()
-    postId: string;
+    post: string;
 
     @IsString()
     comment: string;

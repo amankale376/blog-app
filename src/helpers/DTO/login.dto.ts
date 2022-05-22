@@ -20,7 +20,6 @@ export class SignupDto {
     @IsString()
     password: string;
 
-    profilePicture: string;
 }
 
 export class EditDto {
@@ -33,5 +32,4 @@ export class EditDto {
     @IsString()
     username: string;
 
-    profilePicture: string;
 }

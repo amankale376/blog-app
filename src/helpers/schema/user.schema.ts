@@ -4,7 +4,6 @@ export const UserSchema = new mongoose.Schema({
     name: { type: String, nullable: false },
     username: { type: String, nullable: false },
     password: { type: String, nullable: false },
-    profilePicture: { type: String, nullable: true, default: null },
     email: { type: String, nullable: false },
     role: { type: String, nullable: false, enum: Role, default: Role.User }
 });
