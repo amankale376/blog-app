@@ -110,6 +110,14 @@ export class PostsService {
             sort = parseInt(sort) || -1;
             const isUser = await this.userModel.findById(user._id);
             if (!isUser) throw new UnauthorizedException('unauthorized');
+            if (isUser.role === Role.Admin) {
+                const { success, allPosts, hasMore } = await this.getAllPosts(
+                    limit,
+                    offset,
+                    sort
+                );
+                return { success, posts: allPosts, hasMore };
+            }
             const allPosts = await this.postModel.aggregate([
                 {
                     $addFields: {
