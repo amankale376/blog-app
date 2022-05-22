@@ -1,6 +1,6 @@
 import { Body, Controller, Get, Post } from '@nestjs/common';
 import { Auth, GetUserId, Roles } from 'src/helpers/auth.guard';
-import { LoginDto, SignupDto } from 'src/helpers/DTO/login.dto';
+import { EditDto, LoginDto, SignupDto } from 'src/helpers/DTO/login.dto';
 import { Role } from 'src/helpers/role.enum';
 import { UsersService } from './users.service';
 
@@ -22,5 +22,12 @@ export class UsersController {
     @Post('signup')
     async signup(@Body() signupDto: SignupDto) {
         return await this.service.signup(signupDto);
+    }
+
+    @Post('editUser')
+    @Auth()
+    @Roles(Role.User)
+    async editUser(@GetUserId() user, @Body() editDto: EditDto) {
+        return await this.service.editUser(user, editDto);
     }
 }

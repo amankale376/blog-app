@@ -6,7 +6,7 @@ import {
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { LoginDto, SignupDto } from 'src/helpers/DTO/login.dto';
+import { EditDto, LoginDto, SignupDto } from 'src/helpers/DTO/login.dto';
 import { IUser } from 'src/helpers/Interfaces/user.interface';
 import * as bcrypt from 'bcryptjs';
 import * as jwt from 'jsonwebtoken';
@@ -102,6 +102,20 @@ export class UsersService {
                 username
             });
             return { success: true, ...newUser.toJSON() };
+        } catch (error) {
+            throw error;
+        }
+    }
+
+    async editUser(user, editDto: EditDto) {
+        try {
+            const isUserAvailable = await this.userModel.findById(user._id);
+            if (!isUserAvailable) throw new NotFoundException('user not found');
+            await this.userModel.updateOne(
+                { _id: user._id },
+                { $set: { ...editDto } }
+            );
+            return { success: true, editDto };
         } catch (error) {
             throw error;
         }

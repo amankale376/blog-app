@@ -22,3 +22,16 @@ export class SignupDto {
 
     profilePicture: string;
 }
+
+export class EditDto {
+    @IsString()
+    name: string;
+
+    @IsEmail()
+    email: string;
+
+    @IsString()
+    username: string;
+
+    profilePicture: string;
+}

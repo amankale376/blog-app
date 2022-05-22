@@ -15,3 +15,11 @@ export class DeletePostDto {
     @IsString()
     postId: string;
 }
+
+export class CreateCommentDto {
+    @IsString()
+    postId: string;
+
+    @IsString()
+    comment: string;
+}

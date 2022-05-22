@@ -1,6 +1,10 @@
-import { Body, Controller, Get, Param, Post, Query } from '@nestjs/common';
+import { Body, Controller, Get, Post, Query } from '@nestjs/common';
 import { Auth, GetUserId, Roles } from 'src/helpers/auth.guard';
-import { CreatePostDto, DeletePostDto } from 'src/helpers/DTO/post.dto';
+import {
+    CreateCommentDto,
+    CreatePostDto,
+    DeletePostDto
+} from 'src/helpers/DTO/post.dto';
 import { Role } from 'src/helpers/role.enum';
 import { PostsService } from './posts.service';
 
@@ -28,14 +32,28 @@ export class PostsController {
         @Query('offset') offset: string,
         @Query('sort') sort: string
     ) {
-        console.log('this was hit');
         return await this.postsService.getAllPosts(limit, offset, sort);
     }
 
     @Get('getUserPosts')
     @Auth()
     @Roles(Role.Admin, Role.User)
-    async getUserPosts(@GetUserId() user) {
-        return await this.postsService.getUserPosts(user);
+    async getUserPosts(
+        @GetUserId() user,
+        @Query('limit') limit: string,
+        @Query('offset') offset: string,
+        @Query('sort') sort: string
+    ) {
+        return await this.postsService.getUserPosts(user, limit, offset, sort);
+    }
+
+    @Post('createComment')
+    @Auth()
+    @Roles(Role.Admin, Role.User)
+    async createComment(
+        @GetUserId() user,
+        @Body() createCommentDto: CreateCommentDto
+    ) {
+        return await this.postsService.createComment(user, createCommentDto);
     }
 }
