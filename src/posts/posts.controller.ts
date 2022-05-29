@@ -21,7 +21,6 @@ export class PostsController {
 
     @Post('deletePost')
     @Auth()
-    @Roles(Role.Admin, Role.User)
     async deletePost(@GetUserId() user, @Body() deletePostDto: DeletePostDto) {
         return await this.postsService.deletePost(user, deletePostDto);
     }

@@ -49,7 +49,7 @@ export class PostsService {
                 });
                 return { success: true, message: 'post deleted' };
             }
-            throw new UnauthorizedException('unauthorized');
+            throw new UnauthorizedException('Not the owner');
         } catch (error) {
             throw error;
         }
@@ -157,7 +157,7 @@ export class PostsService {
                 }
             ]);
             const totalDocuments = await this.postModel
-                .find({ userStringId: user._id })
+                .find({ user: user._id })
                 .count();
             let hasMore = false;
             if (offset + allPosts.length < totalDocuments) {
